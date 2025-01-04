@@ -1,6 +1,7 @@
 from dense import Dense
 from activations import Tanh
 from losses import mse, mse_prime
+from network import Network
 
 import numpy as np
 
@@ -17,30 +18,10 @@ network = [
 epochs = 10000  # number of training iterations
 learning_rate = 0.1  # step size for gradient descent
 
-# training
-for e in range(epochs):
-    error = 0
-    for x, y in zip(X, Y):
-        # forward
-        output = x
-        for layer in network:
-            output = layer.forward(output)
-        
-        # error
-        error += mse(y, output)
-        
-        # backward pass
-        output_grad = mse_prime(y, output)
-        for layer in reversed(network):
-            output_grad = layer.backward(output_grad, learning_rate)
-    
-    error /= len(X)
-    if e % 1000 == 0:
-        print(f'epoch {e}, error {error}')
+model = Network(network)
+model.train(mse, mse_prime, X, Y, epochs, learning_rate, False)
 
 # testing
 for x, y in zip(X, Y):
-    output = x
-    for layer in network:
-        output = layer.forward(output)
+    output = model.predict(x)
     print(f'X: {x.flatten()}, y: {y.flatten()}, predicted: {output.flatten()}')
