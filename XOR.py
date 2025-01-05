@@ -1,8 +1,7 @@
-from network import Network
-from dense import Dense
-from dropout import Dropout
-from activations import Tanh
-from losses import mse, mse_prime
+from deeplearn.network import Network
+from deeplearn.layers import Dense
+from deeplearn.layers.activations import Tanh
+from deeplearn.loss import mse, mse_prime
 
 import numpy as np
 
@@ -17,6 +16,8 @@ network = [
 ]
 
 model = Network(network)
+
+# model.train(loss, loss_prime, x_train, y_train, epochs = 1000, learning_rate = 0.01, verbose = True)
 model.train(mse, mse_prime, X, Y, 10000, 0.1, False)
 
 # testing

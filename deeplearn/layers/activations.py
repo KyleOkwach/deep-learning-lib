@@ -2,7 +2,7 @@
 """
     Applies an activation function to the input.
 """
-from layer import Layer
+from deeplearn.layers.layer import Layer
 import numpy as np  # for matrix multiplication
 
 class Activation(Layer):
