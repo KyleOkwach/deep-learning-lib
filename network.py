@@ -26,5 +26,5 @@ class Network:
             error /= len(x_train)
             if verbose:
                 print(f"{e + 1}/{epochs}, error={error}")
-            elif e % 1000 == 0:
+            elif e % (epochs//10) == 0:
                 print(f'epoch {e}, error {error}')
