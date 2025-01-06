@@ -21,8 +21,9 @@ class Layer:
 """
 class Dense(Layer):
     def __init__(self, input_size, output_size):
-        self.weights = np.random.rand(output_size, input_size)
-        self.bias = np.random.rand(output_size, 1)
+        scale = np.sqrt(2.0 / input_size)  # He initialization
+        self.weights = np.random.randn(output_size, input_size) * scale
+        self.bias = np.zeros((output_size, 1))  # Initialize bias to zero
     
     def forward(self, input):
         # Save the input for the backward pass

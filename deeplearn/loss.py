@@ -5,11 +5,20 @@ def mse(y_true, y_pred):
 
 def mse_prime(y_true, y_pred):
     # Derivative of the loss function with respect to the prediction (dL/dy_pred)
-    return 2 * (y_pred - y_true) / y_true.size
+    return 2 * (y_pred - y_true) / np.size(y_true)
+
+# def binary_cross_entropy(y_true, y_pred):
+#     return np.mean(-y_true * np.log(y_pred) - (1 - y_true) * np.log(1 - y_pred))
+
+# def binary_cross_entropy_prime(y_true, y_pred):
+#     return ((1 - y_true) / (1 - y_pred) - y_true / y_pred) / np.size(y_true)
 
 def binary_cross_entropy(y_true, y_pred):
-    return -np.mean(y_true * np.log(y_pred) + (1 - y_true) * np.log(1 - y_pred))
+   epsilon = 1e-15
+   y_pred = np.clip(y_pred, epsilon, 1 - epsilon)
+   return -np.mean(y_true * np.log(y_pred) + (1 - y_true) * np.log(1 - y_pred))
 
 def binary_cross_entropy_prime(y_true, y_pred):
-    # Derivative of the loss function with respect to the prediction (dL/dy_pred)
-    return ((1 - y_true) / (1 - y_pred) - y_true / y_pred) / y_true.size
+   epsilon = 1e-15
+   y_pred = np.clip(y_pred, epsilon, 1 - epsilon)
+   return ((1 - y_true) / (1 - y_pred) - y_true / y_pred) / np.size(y_true)
