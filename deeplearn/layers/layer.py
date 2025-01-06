@@ -37,6 +37,9 @@ class Dense(Layer):
 
 
 # _____ CONVOLUTIONAL LAYER _____
+"""
+    A convolutional layer applies a set of kernels to the input.
+"""
 class Convolutional(Layer):
     def __init__(self, input_shape, kernel_size, depth):
         """
@@ -75,3 +78,19 @@ class Convolutional(Layer):
         self.kernels -= learning_rate * kernels_gradient
         self.biases -= learning_rate * output_grad
         return input_gradient
+
+
+# _____ RESHAPE LAYER _____
+"""
+    Reshape the input tensor.
+"""
+class Reshape(Layer):
+    def __init__(self, input_shape, output_shape):
+        self.input_shape = input_shape
+        self.output_shape = output_shape
+    
+    def forward(self, input):
+        return np.reshape(input, self.output_shape)
+
+    def backward(self, output_grad, learning_rate):
+        return np.reshape(output_grad, self.input_shape)

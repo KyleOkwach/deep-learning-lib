@@ -1,4 +1,4 @@
-class Network:
+class Model:
     def __init__(self, layers: list):
         self.layers = layers
         
