@@ -2,42 +2,63 @@ import os
 os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
 
 import numpy as np
+
 from keras import utils
 from keras.datasets import mnist
-
-from deeplearn import Model
+from deeplearn import Model, backend
 from deeplearn.layers import Dense, Convolutional, Reshape
 from deeplearn.layers.activations import Sigmoid
 from deeplearn.loss import binary_cross_entropy, binary_cross_entropy_prime
 
+
 def preprocess_data(x, y, limit):
-    # get indices of images with label 0 and 1
-    zero_index = np.where(y == 0)[0][:limit]
-    one_index = np.where(y == 1)[0][:limit]
-    two_index = np.where(y == 2)[0][:limit]
+    """
+    Preprocess MNIST data to extract and normalize images with specific labels.
 
-    # stack the indices and shuffle them
-    all_indices = np.hstack((zero_index, one_index))
-    all_indices = np.random.permutation(all_indices)
+    Args:
+        x: Input data (images).
+        y: Labels.
+        limit: Number of samples to extract for each label.
 
-    # get the images and labels with the selected indices (0 and 1)
+    Returns:
+        Preprocessed input data and one-hot encoded labels in backend-compatible format.
+    """
+    # Get indices of images with label 0 and 1
+    zero_index = backend.to_numpy(backend.xp.where(y == 0)[0][:limit])
+    one_index = backend.to_numpy(backend.xp.where(y == 1)[0][:limit])
+    
+    # Stack the indices and shuffle them
+    all_indices = backend.to_numpy(backend.xp.hstack((zero_index, one_index)))
+    backend.xp.random.shuffle(all_indices)
+
+    # Select the images and labels with the selected indices (labels 0 and 1)
     x, y = x[all_indices], y[all_indices]
 
-    x = x.reshape(len(x), 1, 28, 28)
-    x = x.astype('float32') / 255
+    # Normalize images and reshape
+    x = x.reshape(len(x), 1, 28, 28).astype('float32') / 255
 
-    y = utils.to_categorical(y)  # create one-hot encoded labels
-    y = y.reshape(len(y), 2, 1)
+    # One-hot encode the labels
+    y = utils.to_categorical(y, num_classes=2).reshape(len(y), 2, 1)
+
+    # Convert to the backend array format
+    x = backend.from_numpy(x)
+    y = backend.from_numpy(y)
 
     return x, y
 
+
 def main():
-    # load mnist data
+    # Load MNIST data
     (x_train, y_train), (x_test, y_test) = mnist.load_data()
+
+    # Preprocess training and test data
     x_train, y_train = preprocess_data(x_train, y_train, 100)
     x_test, y_test = preprocess_data(x_test, y_test, 100)
 
-    # neural network
+    # Set backend to use CUDA if available
+    backend.set_cuda(use_cuda=True)
+
+    # Define the neural network
     network = [
         Convolutional((1, 28, 28), 3, 5),
         Sigmoid(),
@@ -48,13 +69,21 @@ def main():
         Sigmoid()
     ]
 
+    # Initialize the model
     model = Model(network)
-    model.train(binary_cross_entropy, binary_cross_entropy_prime, x_train, y_train, 20, 0.1, False)
 
-    # test the model
+    # Train the model
+    model.train(binary_cross_entropy, binary_cross_entropy_prime, x_train, y_train, epochs=20, learning_rate=0.1, verbose=False)
+
+    # Test the model
     for x, y in zip(x_test, y_test):
-        output = model.predict(x)
+        # Predict and convert outputs to NumPy for compatibility
+        output = backend.to_numpy(model.predict(x))
+        y = backend.to_numpy(y)
+
+        # Display predictions
         print(f"pred: {np.argmax(output)}, true: {np.argmax(y)}")
+
 
 if __name__ == "__main__":
     main()

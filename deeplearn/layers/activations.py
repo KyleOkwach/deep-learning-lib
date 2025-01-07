@@ -3,7 +3,7 @@
     Applies an activation function to the input.
 """
 from deeplearn.layers.layer import Layer
-import numpy as np  # for matrix multiplication
+from deeplearn.utils.backend import backend
 
 class Activation(Layer):
     def __init__(self, activation, activation_prime):
@@ -17,7 +17,7 @@ class Activation(Layer):
     
     def backward(self, output_grad, learning_rate):
         # return output_grad * self.activation_prime(self.input)
-        return np.multiply(output_grad, self.activation_prime(self.input))
+        return backend.xp.multiply(output_grad, self.activation_prime(self.input))
 
 # _____ ACTIVATION FUNCTIONS _____
 
@@ -27,8 +27,8 @@ class Activation(Layer):
 """
 class Tanh(Activation):
     def __init__(self):
-        tanh = lambda x: np.tanh(x)
-        tanh_prime = lambda x: 1 - np.tanh(x)**2
+        tanh = lambda x: backend.xp.tanh(x)
+        tanh_prime = lambda x: 1 - backend.xp.tanh(x)**2
         super().__init__(tanh, tanh_prime)
 
 
@@ -38,6 +38,6 @@ class Tanh(Activation):
 """
 class Sigmoid(Activation):
     def __init__(self):
-        sigmoid = lambda x: 1 / (1 + np.exp(-np.clip(x, -500, 500)))
+        sigmoid = lambda x: 1 / (1 + backend.xp.exp(-backend.xp.clip(x, -500, 500)))
         sigmoid_prime = lambda x: sigmoid(x) * (1 - sigmoid(x))
         super().__init__(sigmoid, sigmoid_prime)

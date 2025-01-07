@@ -1,24 +1,29 @@
-import numpy as np
+from deeplearn.utils.backend import backend
 
 def mse(y_true, y_pred):
-    return np.mean(np.power(y_true - y_pred, 2))
+    """
+    Mean Squared Error loss function.
+    """
+    return backend.xp.mean(backend.xp.power(y_true - y_pred, 2))
 
 def mse_prime(y_true, y_pred):
-    # Derivative of the loss function with respect to the prediction (dL/dy_pred)
-    return 2 * (y_pred - y_true) / np.size(y_true)
-
-# def binary_cross_entropy(y_true, y_pred):
-#     return np.mean(-y_true * np.log(y_pred) - (1 - y_true) * np.log(1 - y_pred))
-
-# def binary_cross_entropy_prime(y_true, y_pred):
-#     return ((1 - y_true) / (1 - y_pred) - y_true / y_pred) / np.size(y_true)
+    """
+    Derivative of Mean Squared Error with respect to predictions.
+    """
+    return 2 * (y_pred - y_true) / backend.xp.size(y_true)
 
 def binary_cross_entropy(y_true, y_pred):
-   epsilon = 1e-15
-   y_pred = np.clip(y_pred, epsilon, 1 - epsilon)
-   return -np.mean(y_true * np.log(y_pred) + (1 - y_true) * np.log(1 - y_pred))
+    """
+    Binary Cross-Entropy loss function.
+    """
+    epsilon = 1e-15
+    y_pred = backend.xp.clip(y_pred, epsilon, 1 - epsilon)  # Ensure numerical stability
+    return -backend.xp.mean(y_true * backend.xp.log(y_pred) + (1 - y_true) * backend.xp.log(1 - y_pred))
 
 def binary_cross_entropy_prime(y_true, y_pred):
-   epsilon = 1e-15
-   y_pred = np.clip(y_pred, epsilon, 1 - epsilon)
-   return ((1 - y_true) / (1 - y_pred) - y_true / y_pred) / np.size(y_true)
+    """
+    Derivative of Binary Cross-Entropy with respect to predictions.
+    """
+    epsilon = 1e-15
+    y_pred = backend.xp.clip(y_pred, epsilon, 1 - epsilon)  # Ensure numerical stability
+    return ((1 - y_true) / (1 - y_pred) - y_true / y_pred) / backend.xp.size(y_true)
