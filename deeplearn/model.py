@@ -1,7 +1,6 @@
-import pickle
-import os
 from deeplearn.utils.backend import backend
-import numpy as np
+import time
+from datetime import timedelta
 
 class Model:
     def __init__(self, layers: list):
@@ -25,12 +24,15 @@ class Model:
             y_train: Training targets (NumPy or CuPy arrays).
             epochs: Number of training epochs.
             learning_rate: Learning rate for gradient descent.
+            batch_size: Size of mini-batches for training.
             verbose: Whether to print progress at each epoch.
         """
         x_train = backend.from_numpy(x_train)
         y_train = backend.from_numpy(y_train)
         n_samples = len(x_train)
         
+        start_time = time.time()
+
         for e in range(epochs):
             error = 0
             # Create batches
@@ -48,10 +50,16 @@ class Model:
                         grad = layer.backward(grad, learning_rate)
                         
             error /= n_samples
+            # Improved progress display
             if verbose:
-                print(f"{e + 1}/{epochs}, error={backend.to_numpy(error)}")
+                print(f"Epoch {e + 1}/{epochs}\t| Error: {backend.to_numpy(error):.6f}")
             elif e % (epochs // 10) == 0:
-                print(f"Epoch {e}, error={backend.to_numpy(error)}")
+                print(f"Epoch {e + 1}/{epochs}\t| Error: {backend.to_numpy(error):.6f}")
+        
+        elapsed_time = time.time() - start_time  # Calculate time taken
+        hours, rem = divmod(elapsed_time, 3600)
+        minutes, seconds = divmod(rem, 60)
+        print(f"\nTraining completed in {int(hours)}h {int(minutes)}m {int(seconds)}s.")
     
     def save(self, filepath):
         """Save model architecture and weights to disk."""

@@ -59,7 +59,7 @@ def main():
     x_test, y_test = preprocess_data(x_test, y_test, 100)
 
     # Set backend to use CUDA if available
-    backend.set_cuda(use_cuda=True)
+    backend.set_cuda(use_cuda=False)
 
     # Define the neural network
     network = [
