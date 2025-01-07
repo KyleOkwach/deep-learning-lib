@@ -1,4 +1,7 @@
+import pickle
+import os
 from deeplearn.utils.backend import backend
+import numpy as np
 
 class Model:
     def __init__(self, layers: list):
@@ -49,3 +52,14 @@ class Model:
                 print(f"{e + 1}/{epochs}, error={backend.to_numpy(error)}")
             elif e % (epochs // 10) == 0:
                 print(f"Epoch {e}, error={backend.to_numpy(error)}")
+    
+    def save(self, filepath):
+        """Save model architecture and weights to disk."""
+        from deeplearn.utils.serialization import save_model
+        save_model(self, filepath)
+
+    @classmethod
+    def load(cls, filepath):
+        """Load model from disk."""
+        from deeplearn.utils.serialization import load_model
+        return load_model(filepath)

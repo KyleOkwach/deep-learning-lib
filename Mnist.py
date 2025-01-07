@@ -9,6 +9,7 @@ from deeplearn import Model
 from deeplearn.layers import Dense
 from deeplearn.layers.activations import Tanh
 from deeplearn.loss import mse, mse_prime
+from deeplearn.utils import backend, save_model, load_model
 
 def preprocess_data(x, y, limit):
     # reshape and normalize input data

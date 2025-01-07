@@ -5,7 +5,8 @@ import numpy as np
 
 from keras import utils
 from keras.datasets import mnist
-from deeplearn import Model, backend
+from deeplearn import Model
+from deeplearn.utils import backend, save_model, load_model
 from deeplearn.layers import Dense, Convolutional, Reshape
 from deeplearn.layers.activations import Sigmoid
 from deeplearn.loss import binary_cross_entropy, binary_cross_entropy_prime
@@ -85,6 +86,9 @@ def main():
 
         # Display predictions
         print(f"pred: {np.argmax(output)}, true: {np.argmax(y)}")
+    
+    # Save the model
+    model.save('models/mnist_classifier.pkl')
 
 
 if __name__ == "__main__":
