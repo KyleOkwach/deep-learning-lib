@@ -13,34 +13,36 @@ from deeplearn.loss import binary_cross_entropy, binary_cross_entropy_prime
 
 def preprocess_data(x, y, limit):
     """
-    Preprocess MNIST data to extract and normalize images with specific labels.
+    Preprocess MNIST data to extract and normalize images for all digits.
 
     Args:
-        x: Input data (images).
-        y: Labels.
-        limit: Number of samples to extract for each label.
+        x: Input data (images)
+        y: Labels (0-9)
+        limit: Number of samples to extract for each digit
 
     Returns:
         Preprocessed input data and one-hot encoded labels in backend-compatible format.
     """
-    # Get indices of images with label 0 and 1
-    zero_index = backend.to_numpy(backend.xp.where(y == 0)[0][:limit])
-    one_index = backend.to_numpy(backend.xp.where(y == 1)[0][:limit])
-    
-    # Stack the indices and shuffle them
-    all_indices = backend.to_numpy(backend.xp.hstack((zero_index, one_index)))
+    indices = []
+    # Get indices for each digit (0-9)
+    for digit in range(10):
+        digit_indices = backend.to_numpy(backend.xp.where(y == digit)[0][:limit])
+        indices.extend(digit_indices)
+
+    # Convert to array and shuffle
+    all_indices = backend.xp.array(indices)
     backend.xp.random.shuffle(all_indices)
 
-    # Select the images and labels with the selected indices (labels 0 and 1)
+    # Select the images and labels
     x, y = x[all_indices], y[all_indices]
 
     # Normalize images and reshape
     x = x.reshape(len(x), 1, 28, 28).astype('float32') / 255
 
-    # One-hot encode the labels
-    y = utils.to_categorical(y, num_classes=2).reshape(len(y), 2, 1)
+    # One-hot encode the labels for 10 classes
+    y = utils.to_categorical(y, num_classes=10).reshape(len(y), 10, 1)
 
-    # Convert to the backend array format
+    # Convert to backend format
     x = backend.from_numpy(x)
     y = backend.from_numpy(y)
 
@@ -65,7 +67,7 @@ def main():
         Reshape((5, 26, 26), (5 * 26 * 26, 1)),
         Dense(5 * 26 * 26, 100),
         Sigmoid(),
-        Dense(100, 2),
+        Dense(100, 10),
         Sigmoid()
     ]
 
